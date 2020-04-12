@@ -1,0 +1,7 @@
+library(tidyverse)
+library(jsonlite)
+source("cr_dump_parser.R")
+source("rcrossref_parser.R")
+cr_files <- list.files("data",full.names = TRUE)
+p <- progress_estimated(length(cr_files))
+tt <- lapply(cr_files, cr_parse, out_file = "data-parsed/cr_08_jn.json")

@@ -8,16 +8,17 @@ cr_parse <- function(in_file, out_file) {
   # progress  
   p$tick()$print()
   # read json
-  req <- jsonlite::fromJSON(file, simplifyVector = FALSE)
+  req <- jsonlite::fromJSON(in_file, simplifyVector = FALSE)
   # data transformation
-  out <- map_df(tt$items, parse_works) %>%
+  out <- map_df(req$items, parse_works) %>%
     # only journal articles
     filter(type == "journal-article") %>%
     # only relevant fields
     select(one_of(cr_md_fields)) %>%
     mutate(issued = lubridate::parse_date_time(issued, c('y', 'ymd', 'ym'))) %>%
     mutate(issued_year = lubridate::year(issued)) %>%
-    filter(issued_year > 2007)
+    filter(issued_year > 2007) %>%
+    mutate(file_name = in_file)
   if(!nrow(out) == 0) {
     con <- file(out_file, "a+")
     jsonlite::stream_out(out, con)
