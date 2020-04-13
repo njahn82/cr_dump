@@ -4,9 +4,7 @@
 library(jsonlite)
 library(tidyverse)
 source("rcrossref_parser.R")
-cr_parse <- function(in_file, out_file) {
-  # progress  
-  p$tick()$print()
+cr_parse <- function(in_file, out_dir) {
   # read json
   req <- jsonlite::fromJSON(in_file, simplifyVector = FALSE)
   # data transformation
@@ -20,9 +18,8 @@ cr_parse <- function(in_file, out_file) {
     filter(issued_year > 2007) %>%
     mutate(file_name = in_file)
   if(!nrow(out) == 0) {
-    con <- file(out_file, "a+")
-    jsonlite::stream_out(out, con)
-    close(con)
+    out_file <- gsub("data", out_dir, in_file)
+    jsonlite::stream_out(out, file(gsub(".gz", "", out_file)))
   } else {
     NULL
   }
