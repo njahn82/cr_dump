@@ -29,3 +29,6 @@ missing_files <- cr_files[!cr_files %in% parsed_files$file_name]
 plan(multisession)
 run_my_code <- future.apply::future_lapply(missing_files, 
                                      purrr::safely(function(x) cr_parse(x, out_dir = "data_parsed")))
+
+
+lapply(c("data_parsed/29606.json.gz", "data_parsed/30501.json.gz"), purrr::safely(function(x) cr_parse(x, out_dir = "")))

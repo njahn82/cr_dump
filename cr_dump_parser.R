@@ -7,6 +7,9 @@ source("rcrossref_parser.R")
 cr_parse <- function(in_file, out_dir) {
   # read json
   req <- jsonlite::fromJSON(in_file, simplifyVector = FALSE)
+  # test
+  types_issues <- cr_test(req)
+  if(any(types_issues$years > 2007, na.rm = TRUE) && any(types_issues$types == "journal-article", na.rm = TRUE)) {
   # data transformation
   out <- map_df(req$items, parse_works) %>%
     # only journal articles
@@ -18,10 +21,13 @@ cr_parse <- function(in_file, out_dir) {
     filter(issued_year > 2007) %>%
     mutate(file_name = in_file)
   if(!nrow(out) == 0) {
-    out_file <- gsub("data", out_dir, in_file)
+    out_file <- gsub("", out_dir, in_file)
     jsonlite::stream_out(out, file(gsub(".gz", "", out_file)))
   } else {
-    NULL
+    write(in_file, "log_missed.txt", append = TRUE)
+    }
+  } else {
+    write(in_file, "log_missed.txt", append = TRUE)
   }
 }
 
@@ -36,3 +42,9 @@ cr_md_fields <- c("doi", # doi
                   "link", # tdm links
                   "indexed" # most recent indexing
 )
+
+cr_test <- function(req) {
+  years <- lubridate::year(lubridate::ymd(sapply(sapply(req[["items"]], "[[", "issued"), make_date))) 
+  types <- sapply(req[["items"]], "[[", "type")
+  list(years = years, types = types)
+}
