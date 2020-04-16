@@ -16,12 +16,12 @@ cr_parse <- function(in_file, out_dir) {
     filter(type == "journal-article") %>%
     # only relevant fields
     select(one_of(cr_md_fields)) %>%
-    mutate(issued = lubridate::parse_date_time(issued, c('y', 'ymd', 'ym'))) %>%
+    mutate(issued = lubridate::parse_date_time(issued, c("y", "ymd", "ym"))) %>%
     mutate(issued_year = lubridate::year(issued)) %>%
     filter(issued_year > 2007) %>%
     mutate(file_name = in_file)
   if(!nrow(out) == 0) {
-    out_file <- gsub("", out_dir, in_file)
+    out_file <- gsub("data", out_dir, in_file)
     jsonlite::stream_out(out, file(gsub(".gz", "", out_file)))
   } else {
     write(in_file, "log_missed.txt", append = TRUE)
@@ -44,7 +44,9 @@ cr_md_fields <- c("doi", # doi
 )
 
 cr_test <- function(req) {
-  years <- lubridate::year(lubridate::ymd(sapply(sapply(req[["items"]], "[[", "issued"), make_date))) 
-  types <- sapply(req[["items"]], "[[", "type")
-  list(years = years, types = types)
+  years <- lubridate::year(lubridate::parse_date_time(sapply(sapply(
+    req[["items"]], "[[", "issued"
+  ), make_date), c("y", "ymd", "ym")))
+types <- sapply(req[["items"]], "[[", "type")
+list(years = years, types = types)
 }

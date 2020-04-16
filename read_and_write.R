@@ -28,7 +28,21 @@ cr_files <- list.files("data", full.names = TRUE)
 missing_files <- cr_files[!cr_files %in% parsed_files$file_name]
 plan(multisession)
 run_my_code <- future.apply::future_lapply(missing_files, 
-                                     purrr::safely(function(x) cr_parse(x, out_dir = "data_parsed")))
+                                           purrr::safely(function(x) cr_parse(x, out_dir = "data_parsed")))
+#' improved parsing script, check for relevant elements before applying the parser,
+#' and keep track of files without relevant records
+library(tidyverse)
+library(jsonlite)
+library(future)
+library(future.apply)
+source("cr_dump_parser.R")
+source("rcrossref_parser.R")
+parsed_files <- readr::read_csv("results-20200414-193245.csv")
+parsed_files_2 <- paste0("data/", list.files("data_parsed/"), ".gz")
+parsed_files_3 <- readLines("log_missed.txt")
+cr_files <- list.files("data", full.names = TRUE)
+missing_files <- cr_files[!cr_files %in% c(parsed_files$file_name, parsed_files_2, parsed_files_3)]
+plan(multisession)
+run_my_code <- future.apply::future_lapply(missing_files, 
+                                           purrr::safely(function(x) cr_parse(x, out_dir = "data_parsed")))
 
-
-lapply(c("data_parsed/29606.json.gz", "data_parsed/30501.json.gz"), purrr::safely(function(x) cr_parse(x, out_dir = "")))
