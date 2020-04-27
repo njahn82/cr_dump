@@ -16,6 +16,9 @@ cr_parse <- function(in_file, out_dir) {
     filter(type == "journal-article") %>%
     # only relevant fields
     select(one_of(cr_md_fields)) %>%
+    mutate(created = lubridate::parse_date_time(created, c("y", "ymd", "ym"))) %>%
+    mutate(published.print = lubridate::parse_date_time(published.print, c("y", "ymd", "ym"))) %>%
+    mutate(published.online = lubridate::parse_date_time(published.online, c("y", "ymd", "ym"))) %>%
     mutate(issued = lubridate::parse_date_time(issued, c("y", "ymd", "ym"))) %>%
     mutate(issued_year = lubridate::year(issued)) %>%
     filter(issued_year > 2007) %>%
@@ -34,13 +37,18 @@ cr_parse <- function(in_file, out_dir) {
 cr_md_fields <- c("doi", # doi
                   "title", # title,
                   "issued", # earliest pub date
+                  "created", # date the doi was created
+                  "published.print", # print publication date as reported by the publisher
+                  "published.online", # online publication date as reported by the publisher
                   "container.title", # journal title
                   "publisher", # publisher
                   "member", # crossref member,helpful 4 disambiguating publishers
                   "issn", # issn
                   "license", # license metadata
                   "link", # tdm links
-                  "indexed" # most recent indexing
+                  "indexed", # most recent indexing
+                  "reference.count", # number of references to crossref articles
+                  "is.referenced.by.count" # number of crossref articles linking to this article
 )
 
 cr_test <- function(req) {
