@@ -38,6 +38,7 @@ cr_md_fields <- c("doi", # doi
                   "title", # title,
                   "issued", # earliest pub date
                   "created", # date the doi was created
+                  "page", # page numbers
                   "published.print", # print publication date as reported by the publisher
                   "published.online", # online publication date as reported by the publisher
                   "container.title", # journal title
