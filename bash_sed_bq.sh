@@ -1,4 +1,4 @@
-FILES=~/Documents/r-projects/cr_dump/data_parsed/data_parsed/*
+FILES=data_parsed/*
 for i in $FILES; do
     sed -i '' 's/container.title/container_title/g' $i
     sed -i '' 's/delay.in.days/delay_in_days/g' $i
