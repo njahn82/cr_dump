@@ -26,6 +26,7 @@ cr_parse <- function(in_file, out_dir) {
   if(!nrow(out) == 0) {
     out_file <- gsub("data", out_dir, in_file)
     jsonlite::stream_out(out, file(gsub(".gz", "", out_file)))
+    message(paste0("Successfully parsed: ", in_file))
   } else {
     write(in_file, "log_missed.txt", append = TRUE)
     }
