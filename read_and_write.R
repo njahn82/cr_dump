@@ -45,4 +45,20 @@ missing_files <- cr_files[!cr_files %in% c(parsed_files$file_name, parsed_files_
 plan(multisession)
 run_my_code <- future.apply::future_lapply(missing_files, 
                                            purrr::safely(function(x) cr_parse(x, out_dir = "data_parsed")))
+#' re-do with more fields
+#' delete files in folder data_parsed 
+library(tidyverse)
+library(jsonlite)
+library(future)
+library(future.apply)
+source("cr_dump_parser.R")
+source("rcrossref_parser.R")
+cr_files <- list.files("data", full.names = TRUE)
+parsed_files <- paste0("data/", list.files("data_parsed/"), ".gz")
+discarded_files <- readLines("log_missed.txt")
+missing_files <- cr_files[!cr_files %in% c(discarded_files, parsed_files)]
+plan(multisession)
+run_my_code <- future.apply::future_lapply(missing_files, 
+                                           purrr::safely(function(x) cr_parse(x, out_dir = "data_parsed")))
+
 
