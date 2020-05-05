@@ -117,7 +117,7 @@ bq_auth()
 
 ```{sql, connection=con}
 SELECT member, publisher, COUNT(DISTINCT(doi)) as n
-FROM `api-project-764811344545.cr_dump_march_20.cr_08_20` 
+FROM `api-project-764811344545.cr_dump_march_20.cr_08_20_expanded` 
 GROUP BY member, publisher
 ORDER BY n DESC
 LIMIT 10
@@ -130,7 +130,7 @@ LIMIT 10
 
 ```{sql, connection=con, output.var="license_all"}
 SELECT COUNT(DISTINCT(DOI)) as n
-FROM `api-project-764811344545.cr_dump_march_20.cr_08_20` 
+FROM `api-project-764811344545.cr_dump_march_20.cr_08_20_expanded` 
 WHERE ARRAY_LENGTH(license) > 0
 ```
 
@@ -140,7 +140,7 @@ WHERE ARRAY_LENGTH(license) > 0
 
 ```{sql, connection= con}
 SELECT publisher, COUNT(DISTINCT(DOI)) as n
-FROM `api-project-764811344545.cr_dump_march_20.cr_08_20`, unnest(license) as license
+FROM `api-project-764811344545.cr_dump_march_20.cr_08_20_expanded`, unnest(license) as license
 WHERE REGEXP_CONTAINS(license.URL, 'creativecommons')
 GROUP BY publisher
 ORDER BY n DESC
@@ -151,7 +151,7 @@ LIMIT 10
 
 ```{sql, connection=con, output.var="els_delay"}
 SELECT license.delay_in_days, COUNT(DISTINCT(DOI)) as n
-FROM `api-project-764811344545.cr_dump_march_20.cr_08_20`, unnest(license) as license
+FROM `api-project-764811344545.cr_dump_march_20.cr_08_20_expanded`, unnest(license) as license
 WHERE REGEXP_CONTAINS(license.URL, 'elsevier.com/open-access/userlicense/1.0/')
 GROUP BY license.delay_in_days
 ORDER BY delay_in_days
@@ -168,7 +168,7 @@ ggplot(els_delay, aes(delay_in_days, n)) +
 
 ```{sql, connection=con}
 SELECT COUNT(DISTINCT(publisher)) as n
-FROM `api-project-764811344545.cr_dump_march_20.cr_08_20`, unnest(link) as link
+FROM `api-project-764811344545.cr_dump_march_20.cr_08_20_expanded`, unnest(link) as link
 WHERE link.intended_application = 'text-mining' and link.content_version = 'vor'
 ```
 
@@ -176,7 +176,7 @@ WHERE link.intended_application = 'text-mining' and link.content_version = 'vor'
 
 ```{sql, connection=con}
 SELECT link.content_type, COUNT(DISTINCT(doi)) as n
-FROM `api-project-764811344545.cr_dump_march_20.cr_08_20`, unnest(link) as link
+FROM `api-project-764811344545.cr_dump_march_20.cr_08_20_expanded`, unnest(link) as link
 WHERE link.intended_application = 'text-mining' and link.content_version = 'vor'
 GROUP BY link.content_type
 ORDER BY n DESC
@@ -192,7 +192,7 @@ LIMIT 10
 SELECT COUNT(DISTINCT(upw.doi)) as no_overlap
 FROM   `api-project-764811344545.oadoi_full.mongo_upwFeb20_13_20` as upw
 WHERE genre = 'journal-article' AND NOT EXISTS (SELECT 1 
-                   FROM `api-project-764811344545.cr_dump_march_20.cr_08_20` as cr
+                   FROM `api-project-764811344545.cr_dump_march_20.cr_08_20_expanded` as cr
                    WHERE  LOWER(cr.doi) = upw.doi)
 ```
 
