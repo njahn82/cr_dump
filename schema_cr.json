@@ -1,0 +1,112 @@
+[
+  {
+    "name": "doi", 
+    "type": "STRING"
+  }, 
+  {
+    "name": "title", 
+    "type": "STRING"
+  }, 
+  {
+    "name": "issued", 
+    "type": "STRING"
+  }, 
+  {
+    "name": "issued_year", 
+    "type": "INTEGER"
+  },
+  {
+    "name": "created", 
+    "type": "STRING"
+  }, 
+  {
+    "name": "published_print", 
+    "type": "STRING"
+  }, 
+  {
+    "name": "published_online", 
+    "type": "STRING"
+  }, 
+  {
+    "name": "container_title", 
+    "type": "STRING"
+  }, 
+  {
+    "name": "publisher", 
+    "type": "STRING"
+  }, 
+  {
+    "name": "member", 
+    "type": "STRING"
+  }, 
+  {
+    "name": "issn", 
+    "type": "STRING"
+  }, 
+  {
+    "name": "page", 
+    "type": "STRING"
+  },
+  {
+    "fields": [
+      {
+        "name": "date", 
+        "type": "STRING"
+      }, 
+      {
+        "name": "URL", 
+        "type": "STRING"
+      }, 
+      {
+        "name": "delay_in_days", 
+        "type": "INTEGER"
+      }, 
+      {
+        "name": "content_version", 
+        "type": "STRING"
+      }
+    ], 
+    "mode": "REPEATED", 
+    "name": "license", 
+    "type": "RECORD"
+  }, 
+  {
+    "fields": [
+      {
+        "name": "URL", 
+        "type": "STRING"
+      }, 
+      {
+        "name": "content_type", 
+        "type": "STRING"
+      }, 
+      {
+        "name": "content_version", 
+        "type": "STRING"
+      }, 
+      {
+        "name": "intended_application", 
+        "type": "STRING"
+      }
+    ], 
+    "mode": "REPEATED", 
+    "name": "link", 
+    "type": "RECORD"
+  }, 
+  {
+    "name": "reference_count", 
+    "type": "INTEGER"
+  },
+  {
+    "name": "is_referenced_by_count", 
+    "type": "INTEGER"
+  },
+  {
+    "name": "indexed", 
+    "type": "DATE"
+  }, 
+  {
+    "name": "file_name", 
+    "type": "STRING"
+  }
+]
