@@ -15,16 +15,22 @@ cr_parse <- function(in_file, out_dir) {
     out <- map_df(req$items, parse_works) %>%
       # only journal articles
       filter(type == "journal-article") %>%
+      # abstract present?
+      mutate(has_abstract = is.na(abstract)) %>%
       # only relevant fields
-      select(one_of(cr_md_fields)) %>%
+      select(one_of(cr_md_fields), has_abstract) %>%
       mutate(created = lubridate::parse_date_time(created, c("y", "ymd", "ym"))) %>%
       mutate_at(vars(one_of(
         c("published.print", "published.online")
-      )), function(x)
-        lubridate::parse_date_time(x, c("y", "ymd", "ym"))) %>%
+      )), .funs = list(
+        parsed = function (x) lubridate::parse_date_time(x, c("y", "ymd", "ym")))) %>%
       mutate(issued = lubridate::parse_date_time(issued, c("y", "ymd", "ym"))) %>%
       mutate(issued_year = lubridate::year(issued)) %>%
       filter(issued_year > 2007) %>%
+      rename_at(vars(contains(".")), function(x) gsub("\\.", "_", x)) %>%
+      mutate_at(vars(one_of(c("license", "link"))),
+                 function(z) map(z, ~ .x %>%
+                             rename_at(vars(contains(".")), function(y) gsub("\\.", "_", y)))) %>%
       mutate(file_name = in_file)
     if (!nrow(out) == 0) {
       out_file <- gsub("data", out_dir, in_file)
@@ -53,7 +59,8 @@ cr_md_fields <- c("doi", # doi
                   "link", # tdm links
                   "indexed", # most recent indexing
                   "reference.count", # number of references to crossref articles
-                  "is.referenced.by.count" # number of crossref articles linking to this article
+                  "is.referenced.by.count", # number of crossref articles linking to this article
+                  "language" #language the article is written in
 )
 
 cr_test <- function(req) {

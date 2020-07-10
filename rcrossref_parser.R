@@ -7,7 +7,7 @@ parse_works <- function(zzz){
             'ISSN','issue','issued','license', 'link','member','page',
             'prefix','publisher','reference-count', 'score','source',
             'subject','subtitle','title', 'type','update-policy','URL',
-            'volume','abstract','is-referenced-by-count')
+            'volume','abstract','is-referenced-by-count','language')
   manip <- function(which="issued", y) {
     res <- switch(
       which,
@@ -45,7 +45,8 @@ parse_works <- function(zzz){
       URL = list(y[[which]]),
       volume = list(y[[which]]),
       abstract = list(y[[which]]),
-      `is-referenced-by-count` = list(y[[which]])
+      `is-referenced-by-count` = list(y[[which]]),
+      language = list(y[[which]])
     )
 
     res <- if (is.null(res) || length(res) == 0) NA else res
