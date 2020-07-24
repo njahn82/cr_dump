@@ -19,19 +19,20 @@ cr_parse <- function(in_file, out_dir) {
       mutate(has_abstract = ifelse("abstract" %in% names(.),
                                    ifelse(!is.na(abstract), TRUE, FALSE),
                                    FALSE)) %>%
+      # null strings to na
+      mutate_at(vars(one_of(c("license", "author", "link"))),
+                function(x) na_if(x, "NULL")) %>%
       # authorcount
       mutate_at(vars(one_of(c("author"))),
-                .funs = list(author_count = function(x) map(x, count_authors))) %>%
+                .funs = list(author_count = function(x) map_dbl(x, count_authors))) %>%
       # only relevant fields
       select(one_of(cr_md_fields), has_abstract, author_count) %>%
       # date parsing
-      mutate(created = lubridate::parse_date_time(created, c("y", "ymd", "ym"))) %>%
       mutate_at(vars(one_of(
-        c("published.print", "published.online")
+        c("created", "issued", "published.print", "published.online")
       )), .funs = list(
         parsed = function (x) lubridate::parse_date_time(x, c("y", "ymd", "ym")))) %>%
-      mutate(issued = lubridate::parse_date_time(issued, c("y", "ymd", "ym"))) %>%
-      mutate(issued_year = lubridate::year(issued)) %>%
+      mutate(issued_year = lubridate::year(issued_parsed)) %>%
       filter(issued_year > 2007) %>%
       # remove "." from colnames and nested colnames
       rename_at(vars(contains(".")), function(x) gsub("\\.", "_", x)) %>%
