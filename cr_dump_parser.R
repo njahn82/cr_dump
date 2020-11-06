@@ -15,18 +15,11 @@ cr_parse <- function(in_file, out_dir) {
     out <- map_df(req$items, parse_works) %>%
       # only journal articles
       filter(type == "journal-article") %>%
-      # abstract present?
-      mutate(has_abstract = ifelse("abstract" %in% names(.),
-                                   ifelse(!is.na(abstract), TRUE, FALSE),
-                                   FALSE)) %>%
       # null strings to na
       mutate_at(vars(one_of(c("license", "author", "link"))),
                 function(x) na_if(x, "NULL")) %>%
-      # authorcount
-      mutate_at(vars(one_of(c("author"))),
-                .funs = list(author_count = function(x) map_dbl(x, count_authors))) %>%
       # only relevant fields
-      select(one_of(cr_md_fields), has_abstract, author_count) %>%
+      select(one_of(cr_md_fields)) %>%
       # date parsing
       mutate_at(vars(one_of(
         c("created", "issued", "published.print", "published.online")
@@ -83,13 +76,4 @@ rename_nested_columns <- function(x) {
                                         function(y) gsub("\\.", "_", y))
   }
   return(x)
-}
-
-count_authors <- function(x){
-  if(is.na(x)) {
-    cnt <- 0
-  } else {
-    cnt <- as.data.frame(x) %>% nrow()
-  }
-  return(cnt)
 }
